@@ -332,12 +332,12 @@ contract HouseholdInsurance {
 	// get current state of the contract
 	function state() constant returns (string) {
 		// setup period is where investments and insurees are welcome
-		if(now < offset) {
+		if(__setup()) {
 			return "setup: accepting investments";
 		}
 		// main period is where investmenets are not accepted anymore
 		// insurees may submit their claims and insurer may approve or reject them
-		else if(now < offset + length) {
+		else if(__main()) {
 			return "main: accepting claims";
 		}
 		// reward period is where investors get their rewards
@@ -393,15 +393,18 @@ contract HouseholdInsurance {
 	}
 
 	function __setup() internal constant returns(bool) {
-		return now < offset;
+		//return now < offset;
+		return totalInvestors == 0 || totalInsurees == 0;
 	}
 
 	function __main() internal constant returns(bool) {
-		return now >= offset && now < offset + length;
+		//return now >= offset && now < offset + length;
+		return !__setup() && claimsApproved == 0;
 	}
 
 	function __reward() internal constant returns(bool) {
-		return now >= offset + length;
+		//return now >= offset + length;
+		return !__setup() && !__main();
 	}
 
 	// ----------------------- internal section -----------------------
