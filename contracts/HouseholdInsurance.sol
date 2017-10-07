@@ -5,7 +5,7 @@ pragma solidity 0.4.15;
 contract HouseholdInsurance {
 	// policy settings including property details
 	struct Policy {
-	// an unique id which defines this policy
+		// an unique id which defines this policy
 		uint id;
 
 		// area of the house/apartment in square meters
