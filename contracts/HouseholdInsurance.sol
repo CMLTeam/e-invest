@@ -43,13 +43,13 @@ contract HouseholdInsurance {
 	// an insurer, owner of this contract
 	address insurer;
 
-	// list of investors with their investment values
+	// investors' balances
 	mapping(address => uint) public balances;
 
-	// list of insurees with their contract details
+	// insurees' contract details
 	mapping(address => Policy) policies;
 
-	// list of unresolved claims, nor approved, neither rejected
+	// unresolved claims, nor approved, neither rejected
 	mapping(address => Claim) claims;
 
 	// total amount of wei all the investors invested
