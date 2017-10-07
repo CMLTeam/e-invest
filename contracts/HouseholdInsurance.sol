@@ -5,6 +5,9 @@ pragma solidity 0.4.15;
 contract HouseholdInsurance {
 	// policy settings including property details
 	struct Policy {
+	// an unique id which defines this policy
+		uint id;
+
 		// area of the house/apartment in square meters
 		uint area;
 
@@ -18,10 +21,13 @@ contract HouseholdInsurance {
 		uint coverage;
 	}
 
-	// profile of the insured:
-	// policy settings, current status, etc.
-	struct Insured {
+	// a claim, contains all the data required to approve/reject a claim
+	struct Claim {
+		// an unique id which defines this claim
+		uint id;
 
+		// an amount to cover, must not exceed policy coverage (optional)
+		uint amount;
 	}
 
 	// insurance fees and investments are accepted
@@ -45,6 +51,8 @@ contract HouseholdInsurance {
 	// list of insured with their contract details
 	mapping(address => Policy) policies;
 
+	// list of unresolved claims, nor approved, neither rejected
+	mapping(address => Claim) claims;
 
 	function HouseholdInsurance(uint _offset, uint _length) {
 		// validate insurance settings (inputs)
@@ -62,16 +70,13 @@ contract HouseholdInsurance {
 	// client entrance (insured)
 	// sign of an insurance contract
 	// (buying an insurance product)
-	function insure(uint _area, uint _zoneId, uint _premium, uint _coverage) payable {
+	function insure(uint id, uint area, uint zoneId, uint premium, uint coverage) payable {
 		// perform validations
 		// main period didn't start yet
 		assert(now < offset);
-		// area size must be positive
-		require(_area > 0);
-		// premium must be positive
-		require(_premium > 0);
-		// coverage must be greater then premium
-		require(_coverage > _premium);
+
+		// crate a policy
+		Policy policy = __policy(id, area, zoneId, premium, coverage);
 
 		// call sender gracefully, an insured
 		address insured = msg.sender;
@@ -81,18 +86,15 @@ contract HouseholdInsurance {
 
 		// additional validations
 		// not already insured
-		require(policies[insured].area == 0);
+		assert(policies[insured].id == 0);
 		// we should have received not less then premium specified
-		require(value >= _premium);
-
-		// crate a policy
-		Policy policy = __policy(_area, _zoneId, _premium, _coverage);
+		require(value >= premium);
 
 		// assign policy to a client (insured)
 		policies[insured] = policy;
 
 		// probably we need to return some money back, how much?
-		uint delta = value - _premium;
+		uint delta = value - premium;
 
 		// transfer the delta back to insured
 		insured.transfer(delta);
@@ -100,15 +102,25 @@ contract HouseholdInsurance {
 
 	// client entrance (insured)
 	// submit a claim
-	function claim() {
+	function claim(uint id, uint amount) {
 		// perform validations
 		// main period
 		assert(now >= offset && now < offset + length);
 
+		// create a claim
+		claims[insured] = __claim(_id, amount);
+
 		// call sender gracefully, an insured
 		address insured = msg.sender;
 
-		// TODO: implement logic
+		// additional validations
+		// a policy exists for the insured
+		assert(policies[insured].id != 0);
+		// only one pending claim is allowed
+		assert(claims[insured].id == 0);
+
+		// assign claim to a client (insured)
+		claims[insured] = claim;
 	}
 
 
@@ -196,26 +208,50 @@ contract HouseholdInsurance {
 		investor.transfer(share);
 	}
 
-	// fallback function
-	function() payable {
 
-	}
+
+
 
 
 	// ----------------------- internal section -----------------------
 
 	// allocates a Policy structure in storage
 	function __policy(
+		uint _id,
 		uint _area,
 		uint _zoneId,
 		uint _premium,
 		uint _coverage
 	) internal returns(Policy storage policy) {
-		// just set up all the fields
+		// validate the settings
+		// id must be set
+		require(_id > 0);
+		// area size must be positive
+		require(_area > 0);
+		// premium must be positive
+		require(_premium > 0);
+		// coverage must be greater then premium
+		require(_coverage > _premium);
+
+
+		// set up the fields
+		policy.id = _id;
 		policy.area = _area;
 		policy.zoneId = _zoneId;
 		policy.premium = _premium;
 		policy.coverage = _coverage;
+	}
+
+	// allocates a Claim in storage
+	function __claim(uint _id, uint _amount) internal returns(Claim storage claim) {
+		// claim id defined
+		require(id > 0);
+		// amount claimed must be positive
+		require(amount > 0);
+
+		// set up the fields
+		claim.id = _id;
+		claim.amount = _amount;
 	}
 
 	// ----------------------- internal section -----------------------
