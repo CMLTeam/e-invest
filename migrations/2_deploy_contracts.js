@@ -20,11 +20,17 @@ Number.prototype.einstein = function () {
 	return web3.toWei(this, "grand");	// 10^21
 };
 
+// define insurance contract settings
+var offset = (Date.now() / 1000 | 0) + 120;
+var length = 120;
+console.log("offset:" + offset);
+console.log("length:" + length);
+
 module.exports = function(deployer) {
 	var InsuranceContract = artifacts.require("./HouseholdInsurance.sol");
 	deployer.deploy(
 		InsuranceContract,
-		(Date.now() / 1000 | 0) + 120, // 2 minutes from now
-		120 // 2 minutes
+		offset,
+		length
 	);
 };
