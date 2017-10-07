@@ -13,7 +13,7 @@
     <script src="script.js"></script>
 </head>
 
-<body class="container-fluid" style="padding: 20px" ng-app="root" ng-controller="InsureeCtrl">
+<body class="container-fluid" style="padding: 20px" ng-app="root" ng-controller="InvestCtrl">
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -42,29 +42,59 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-<div style="width: 800px; margin-left: -400px; position: relative; left: 50%;">
-    <h3 style="padding: 20px 0 20px 300px">Investor Cabinet</h3>
+<div style="width: 1000px; margin-left: -500px; position: relative; left: 50%;">
+    <h3 style="padding: 20px 0 20px 350px">Investor Cabinet</h3>
 
-    <div class="portfolios">
-        <div class="pf">
-            <div class="pf_title">Protfolio A</div>
+    <div class="portfolios" ng-class="{ portfolios_hide : investPf != null }">
+        <div class="pf" ng-repeat="pf in portfolios">
+            <div class="pf_title">{{ pf.title }}</div>
+            <div class="pf_descr">{{ pf.descr }}</div>
 
-            <button class="btn btn-primary" type="button">Invest</button>
-        </div>
-
-        <div class="pf">
-            <div class="pf_title">Protfolio B</div>
-
-            <button class="btn btn-primary" type="button">Invest</button>
-        </div>
-
-        <div class="pf">
-            <div class="pf_title">Protfolio C</div>
-
-            <button class="btn btn-primary" type="button">Invest</button>
+            <table class="pf_details">
+                <tr>
+                    <td>Insuree Count</td>
+                    <td>130</td>
+                </tr>
+                <tr>
+                    <td>Avg House Area</td>
+                    <td>62</td>
+                </tr>
+                <tr>
+                    <td>Average Premium</td>
+                    <td>€400.00</td>
+                </tr>
+                <tr>
+                    <td>Average Coverage</td>
+                    <td>€20,000.00</td>
+                </tr>
+                <tr>
+                    <td>Total Premium</td>
+                    <td>€2,300,000.00</td>
+                </tr>
+                <tr>
+                    <td>Total Coverage</td>
+                    <td>€53,700,000.00</td>
+                </tr>
+            </table>
+            
+            <button class="btn btn-lg btn-success" type="button"
+                ng-click="invest(pf)">Invest</button>
         </div>
     </div>
 
-    <form class="form-horizontal" autocomplete="off"></form>
+    <div class="invest_form" ng-class="{invest_form_show : investPf != null}">
+        <form class="form-horizontal" autocomplete="off">
+            <div class="form-group">
+                <label for="" class="col-sm-5 control-label">Investment Period</label>
+                <div class="col-sm-7">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default">One year</button>
+                        <button type="button" class="btn btn-default">6 Months</button>
+                        <button type="button" class="btn btn-default">3 Months</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 </body>

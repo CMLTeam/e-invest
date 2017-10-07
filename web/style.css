@@ -1,23 +1,65 @@
 
 .ins_form1,
-.ins_greeting {
+.ins_greeting,
+.invest_form {
     max-height: 0;
     transition: max-height 1s ease;
     overflow: hidden;
 }
 
 .ins_form1.ins_show,
-.ins_greeting.ins_greeting_show {
+.ins_greeting.ins_greeting_show,
+.invest_form.invest_form_show {
     max-height: 1000px;
 }
 
-.ins_form {
+.ins_form,
+.portfolios {
     max-height: 1000px;
     transition: max-height .2s ease;
     overflow: hidden;
 }
 
-.ins_form.ins_form_hide {
+.ins_form.ins_form_hide,
+.portfolios.portfolios_hide {
     max-height: 0;
 }
 
+.portfolios .pf {
+    display: inline-block;
+    width: 30%;
+    height: 300px;
+    background-color: #d9edf7;
+    padding: 0 20px;
+    margin-right: 20px;
+}
+
+.portfolios .pf .pf_descr {
+    font-style: italic;
+    text-align: center;
+    padding-bottom: 30px;
+}
+.portfolios .pf .pf_title {
+    font-weight: bold;
+    font-size: 1.1em;
+    text-align: center;
+    padding: 15px;
+    padding-bottom: 2px;
+}
+
+.portfolios .pf .btn {
+    position: relative;
+    top: 42px;
+    left: 95px;
+}
+
+.pf_details {
+    width: 100%;
+}
+.pf_details td:nth-child(1) {
+}
+
+.pf_details td:nth-child(2) {
+    text-align: right;
+    text-decoration: underline;
+}
