@@ -85,6 +85,42 @@ contract HouseholdInsurance {
 	// number of claims rejected
 	uint public claimsDeclined;
 
+	// during setup period contract accepts investments
+	// and insurance contract signing
+	modifier setup {
+		// perform validations
+		// we're in setup state
+		// main period didn't start yet
+		assert(now < offset);
+
+		// function execution block
+		_;
+	}
+
+	// during main period contract accepts claims
+	// it allows an insurer to accept / reject them
+	modifier main {
+		// perform validations
+		// we're in the main (claim) period
+		// main period started and didn't finish yet
+		assert(now >= offset && now < offset + length);
+
+		// function execution block
+		_;
+	}
+
+	// during the reward period contract allows
+	// investors to get their investments and shares back
+	modifier reward {
+		// perform validations
+		// we're in reward period
+		// main period ended
+		assert(now >= offset + length);
+
+		// function execution block
+		_;
+	}
+
 	function HouseholdInsurance(uint _offset, uint _length) {
 		// validate insurance settings (inputs)
 		// offset must be in the future,
@@ -104,11 +140,7 @@ contract HouseholdInsurance {
 	// client entrance (insuree)
 	// sign of an insurance contract
 	// (buying an insurance product)
-	function insure(uint id, uint area, uint zoneId, uint premium, uint coverage) payable {
-		// perform validations
-		// main period didn't start yet
-		assert(now < offset);
-
+	function insure(uint id, uint area, uint zoneId, uint premium, uint coverage) setup payable {
 		// crate a policy
 		Policy storage policy = __policy(id, area, zoneId, premium, coverage);
 
@@ -142,13 +174,9 @@ contract HouseholdInsurance {
 
 	// client entrance (insuree)
 	// submit a claim
-	function claim(uint id, uint amount) {
-		// perform validations
-		// main period
-		assert(now >= offset && now < offset + length);
-
+	function claim(uint id, uint amount) main {
 		// create a claim
-		Claim storage claim = __claim(id, amount);
+		Claim storage _claim = __claim(id, amount);
 
 		// call sender gracefully, an insuree
 		address insuree = msg.sender;
@@ -162,7 +190,7 @@ contract HouseholdInsurance {
 		require(amount <= policies[insuree].coverage);
 
 		// assign claim to a client (insuree)
-		claims[insuree] = claim;
+		claims[insuree] = _claim;
 
 		// update status
 		totalClaims++;
@@ -171,10 +199,8 @@ contract HouseholdInsurance {
 
 	// insurer entrance
 	// approve a claim
-	function approve(address insuree) {
+	function approve(address insuree) main {
 		// perform validations
-		// main period
-		assert(now >= offset && now < offset + length);
 		// only insurer can make an approve
 		assert(msg.sender == insurer);
 
@@ -209,10 +235,8 @@ contract HouseholdInsurance {
 
 	// insurer entrance
 	// decline a claim
-	function decline(address insuree, uint reason) {
+	function decline(address insuree, uint reason) main {
 		// perform validations
-		// main period
-		assert(now >= offset && now < offset + length);
 		// only insurer can make a reject
 		assert(msg.sender == insurer);
 		// reason must be set
@@ -232,11 +256,7 @@ contract HouseholdInsurance {
 
 	// investor entrance
 	// make an investment
-	function invest() payable {
-		// perform validations
-		// main period didn't start yet
-		assert(now < offset);
-
+	function invest() setup payable {
 		// call sender gracefully, an investor
 		address investor = msg.sender;
 
@@ -266,10 +286,8 @@ contract HouseholdInsurance {
 
 	// investor entrance
 	// take an investment and profit back
-	function pick() {
+	function pick() reward {
 		// perform validations
-		// main period ended
-		assert(now >= offset + length);
 		// there is still some wei on the contract
 		assert(this.balance > 0);
 
@@ -355,15 +373,15 @@ contract HouseholdInsurance {
 	}
 
 	// allocates a Claim in storage
-	function __claim(uint _id, uint _amount) internal returns(Claim storage claim) {
+	function __claim(uint _id, uint _amount) internal returns(Claim storage _claim) {
 		// claim id defined
 		require(_id > 0);
 		// amount claimed must be positive
 		require(_amount > 0);
 
 		// set up the fields
-		claim.id = _id;
-		claim.amount = _amount;
+		_claim.id = _id;
+		_claim.amount = _amount;
 	}
 
 	function __min(uint a, uint b) internal returns(uint min) {

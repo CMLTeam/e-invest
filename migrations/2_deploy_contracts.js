@@ -23,8 +23,8 @@ Number.prototype.einstein = function () {
 // define insurance contract settings
 var offset = (Date.now() / 1000 | 0) + 120;
 var length = 120;
-console.log("offset:" + offset);
-console.log("length:" + length);
+console.log("offset: " + offset);
+console.log("length: " + length);
 
 module.exports = function(deployer) {
 	var InsuranceContract = artifacts.require("./HouseholdInsurance.sol");

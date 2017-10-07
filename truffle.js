@@ -4,9 +4,9 @@ module.exports = {
 			host: "localhost",
 			port: 8545,
 			network_id: "*",
-			// 1 finney deployment cost:
+			// 10 finney deployment cost:
 			gas: 1000000,
-			gasPrice: 1000000000
+			gasPrice: 10000000000
 		}
 	}
 };
