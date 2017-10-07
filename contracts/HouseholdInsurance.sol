@@ -37,7 +37,10 @@ contract HouseholdInsurance {
 	address insurer;
 
 	// list of investors with their investment values
-	mapping(address => uint) public investors;
+	mapping(address => uint) public balances;
+
+	// total amount of wei all the investors invested
+	uint public totalInvested;
 
 	// list of insured with their contract details
 	mapping(address => Policy) policies;
@@ -136,26 +139,54 @@ contract HouseholdInsurance {
 		uint value = msg.value;
 
 		// current investor balance
-		uint current = investors[investor];
+		uint current = balances[investor];
 
 		// new balance
 		uint balance = current + value;
 
+		// new total invested
+		uint total = totalInvested + value;
+
 		// additional validations
-		// overflow check
+		// overflow checks
 		assert(balance > current);
+		assert(total > totalInvested);
 
 		// update investors' balance accordingly
-		investors[investor] = balance;
+		balances[investor] = balance;
+
+		// update total investments counter
+		totalInvested = total;
 	}
 
 	// investor entrance
 	// take an investment and profit back
 	function pick() {
 		// perform validations
-		assert(now >= offset + length); // main period ended
+		// main period ended
+		assert(now >= offset + length);
+		// there is still some wei on the contract
+		assert(this.balance > 0);
 
-		// TODO: implement logic
+		// call sender gracefully, an investor
+		address investor = msg.sender;
+
+		// calculate the investor's share
+		uint invested = balances[investor];
+
+		// additional validations
+		// the sender is a real investor
+		// and didn't picked up the wei back yet
+		require(invested > 0);
+
+		// calculate the share
+		uint share = totalInvested / invested * this.balance;
+
+		// update investor's balance
+		balances[investor] = 0;
+
+		// transfer the share
+		investor.transfer(share);
 	}
 
 	// fallback function
@@ -166,6 +197,7 @@ contract HouseholdInsurance {
 
 	// ----------------------- internal section -----------------------
 
+	// allocates a Policy structure in storage
 	function __policy(
 		uint _area,
 		uint _zoneId,
