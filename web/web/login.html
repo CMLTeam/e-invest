@@ -1,0 +1,48 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="login.css"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<!--
+    you can substitue the span of reauth email for a input with the email and
+    include the remember me checkbox
+    -->
+<div class="container">
+    <div class="card card-container">
+        <img id="profile-img-consumer" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+        <img id="profile-img-producer" class="profile-img-card" src="img/electro-station.png"
+            style="background-color: #e1e1e1; display: none"/>
+        <p id="profile-name" class="profile-name-card"></p>
+        <form class="form-signin" autocomplete="off">
+            <div style="width: 0; height: 0; overflow: hidden">
+                <input type="email">
+                <input type="password">
+            </div>
+
+                <label style="font-weight: normal" onclick="$('#profile-img-consumer').show();$('#profile-img-producer').hide();">
+                    <input type="radio" name="type" checked>Споживач
+                </label>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <label style="font-weight: normal" onclick="$('#profile-img-producer').show();$('#profile-img-consumer').hide();">
+                    <input type="radio" name="type">Виробник
+                </label>
+
+            <span id="reauth-email" class="reauth-email"></span>
+            <input type="email" id="inputEmail" class="form-control" placeholder="Електронна адреса" required autofocus>
+            <input type="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
+            <div id="remember" class="checkbox">
+                <label>
+                    <input type="checkbox" value="remember-me"> Запамʼятати
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit"
+                onclick="location.href=$('#profile-img-consumer:visible').length ? 'consumer.html' : 'producer.html'">Увійти</button>
+        </form><!-- /form -->
+        <a href="#" class="forgot-password">
+            Забув пароль?
+        </a>
+    </div><!-- /card-container -->
+</div><!-- /container -->

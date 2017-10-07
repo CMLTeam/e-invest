@@ -1,0 +1,23 @@
+
+.ins_form1,
+.ins_greeting {
+    max-height: 0;
+    transition: max-height 1s ease;
+    overflow: hidden;
+}
+
+.ins_form1.ins_show,
+.ins_greeting.ins_greeting_show {
+    max-height: 1000px;
+}
+
+.ins_form {
+    max-height: 1000px;
+    transition: max-height .2s ease;
+    overflow: hidden;
+}
+
+.ins_form.ins_form_hide {
+    max-height: 0;
+}
+

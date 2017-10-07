@@ -1,0 +1,140 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body class="container-fluid" style="padding: 20px">
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Споживач <b>Пупкін Іван Петрович</b></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Кабінет Споживача</a></li>
+                <li><a href="#">Активні контракти</a></li>
+                <li><a href="#">Архів контрактів</a></li>
+                <li><a href="#">Ринок</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <button type="button" class="btn btn-default" onclick="location.href='login.html'">Вихід</button>
+            </form>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div style="width: 800px; margin-left: -400px; position: relative; left: 50%;">
+    <h3 style="padding: 30px 0 30px 100px">Новий місячний контракт на споживання електроенергії</h3>
+    <form class="form-horizontal" autocomplete="off">
+        <hr/>
+        <div class="form-group">
+            <label for="producer" class="col-sm-5 control-label text-left">Оберіть постачальника</label>
+            <div class="col-sm-7">
+                <select id="producer" class="form-control">
+                    <option value="">Сонячна електростанція №1</option>
+                    <option value="">Сонячна електростанція №2</option>
+                    <option value="">Сонячна електростанція №3</option>
+                    <option value="">Сонячна електростанція №4</option>
+                    <option value="">Атомна електростанція №1</option>
+                    <option value="">Атомна електростанція №2</option>
+                    <option value="">Атомна електростанція №3</option>
+                    <option value="">Атомна електростанція №4</option>
+                </select>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="month" class="col-sm-5 control-label">Оберіть період контракту</label>
+            <div class="col-sm-7">
+                <select id="month" class="form-control">
+                    <option value="">січень, 2017</option>
+                    <option value="">лютий, 2017</option>
+                    <option value="">березень, 2017</option>
+                    <option value="">квітень, 2017</option>
+                    <option value="">травень, 2017</option>
+                    <option value="">червень, 2017</option>
+                    <option value="">липень, 2017</option>
+                    <option value="">серпень, 2017</option>
+                    <option value="">вересень, 2017</option>
+                    <option value="">жовтень, 2017</option>
+                    <option value="">листопад, 2017</option>
+                    <option value="">грудень, 2017</option>
+                </select>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-5 control-label">Оберіть місячний обʼєм електроенергії в
+                наступному місяці</label>
+            <div class="col-sm-7">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="">
+                    <div class="input-group-addon">кВ * г</div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-5 control-label">Оберіть можливе відхилення в +-кВ * г</label>
+            <div class="col-sm-7">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="">
+                    <div class="input-group-addon">кВ * г</div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-5 control-label">Авансовий платіж за обраний місячний
+                обʼєм</label>
+            <div class="col-sm-7">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="">
+                    <div class="input-group-addon">грн</div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-5 control-label">Вартість кВ * г в межах законтрактованого
+                відхилення становить</label>
+            <div class="col-sm-7">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="" value="2.00">
+                    <div class="input-group-addon">грн</div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-5 control-label">Вартість кВ * г поза межами законтрактованого
+                відхилення становить</label>
+            <div class="col-sm-7">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="" value="2.50">
+                    <div class="input-group-addon">грн</div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <div class="col-sm-offset-5 col-sm-8">
+                <button type="submit" class="btn btn-lg btn-success">Підписати контракт</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
