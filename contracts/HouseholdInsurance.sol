@@ -11,7 +11,7 @@ contract HouseholdInsurance {
 		// area of the house/apartment in square meters
 		uint area;
 
-		// identifies a location of the property, can be a zip code
+		// identifies location of the property, can be a zip code
 		uint zoneId;
 
 		// total premium paid according to contract
@@ -19,6 +19,9 @@ contract HouseholdInsurance {
 
 		// maximum amount to be paid to ensurer if a loss occur
 		uint coverage;
+
+		// amount already claimed by insurer to insuree
+		uint claimed;
 	}
 
 	// a claim, contains all the data required to approve/reject a claim
@@ -143,28 +146,63 @@ contract HouseholdInsurance {
 
 		// create a claim
 		Claim storage claim = __claim(id, amount);
+		// extract policy
+		Policy memory policy = policies[insuree];
 
 		// call sender gracefully, an insuree
 		address insuree = msg.sender;
 
 		// additional validations
 		// a policy exists for the insuree
-		assert(policies[insuree].id != 0);
+		assert(policy.id != 0);
 		// only one pending claim is allowed
 		assert(claims[insuree].id == 0);
+		// claim amount cannot exceed policy coverage
+		require(amount <= policy.coverage);
 
 		// assign claim to a client (insuree)
 		claims[insuree] = claim;
+
+		// update status
+		totalClaims++;
 	}
 
 
 	// insurer entrance
 	// approve a claim
-	function approve() {
+	function approve(address insuree) {
 		// perform validations
-		assert(now >= offset && now < offset + length); // main period
-		require(msg.sender == insurer); // only insurer can make an approve
-		// TODO: implement logic
+		// main period
+		assert(now >= offset && now < offset + length);
+		// only insurer can make an approve
+		require(msg.sender == insurer);
+
+		// find insuree policy
+		Policy storage policy = policies[insuree];
+		// find insuree claim
+		Claim memory claim = claims[insuree];
+		// calculate how much coverage to pay
+		uint amount = policy.coverage - policy.claimed;
+
+		// additional validations
+		// policy for this insuree must exist
+		assert(policy.id != 0);
+		// unresolved claim should exist
+		assert(claim.id != 0);
+		// there should be enough coverage left on the policy
+		require(amount > 0);
+		// overflow check
+		assert(amount <= policy.coverage);
+
+		// update policy
+		policy.claimed += amount;
+
+		// delete the claim to be satisfied
+		delete(claims[insuree]);
+
+		// update status
+		claimsApproved++;
+		totalAmountClaimed += amount;
 	}
 
 	// insurer entrance
@@ -312,6 +350,10 @@ contract HouseholdInsurance {
 		// set up the fields
 		claim.id = _id;
 		claim.amount = _amount;
+	}
+
+	function __min(uint a, uint b) internal returns(uint min) {
+		min = a < b ? a : b;
 	}
 
 	// ----------------------- internal section -----------------------
