@@ -1,3 +1,5 @@
+'use strict';
+
 Number.prototype.kwei = function () {
 	return web3.toWei(this, "kwei");	// 1000
 };
@@ -26,39 +28,35 @@ var length = 120;
 console.log("offset: " + offset);
 console.log("length: " + length);
 
-module.exports = function(deployer) {
-	var InsuranceContract = artifacts.require("./HouseholdInsurance.sol");
-	deployer.deploy(
-		InsuranceContract,
-		offset,
-		length
-	).then(function() {
-		var instance = InsuranceContract.at(InsuranceContract.address);
-		instance.state().then(function(val) {
-			console.log(val);
+module.exports = async function(deployer) {
+	let InsuranceContract = artifacts.require("./HouseholdInsurance.sol");
+	await deployer.deploy(InsuranceContract, offset, length);
+	let instance = InsuranceContract.at(InsuranceContract.address);
+	let val = await instance.state();
+	console.log(val.toString(10));
+	await instance.insure(0x01, 50, 0, 100, 5000, {value: 100});
+	display_balance();
+	val = await instance.state();
+	console.log(val);
+	await instance.invest({value: 10000});
+	display_balance();
+	val = await instance.state();
+	console.log(val);
+	instance.claim(0x01, 5000);
+	val = await instance.state();
+	console.log(val);
+	await instance.decline('0x7e5f4552091a69125d5dfcb7b8c2659029395bdf', 0x01);
+	display_balance();
+	val = await instance.state();
+	console.log(val);
+	await instance.withdraw();
+	display_balance();
+	val = await instance.state();
+	console.log(val);
+
+	function display_balance() {
+		web3.eth.getBalance(InsuranceContract.address, function(err, val) {
+			console.log("balance: " + val.toString(10));
 		});
-		instance.invest({value: 10000});
-		instance.state().then(function(val) {
-			console.log(val);
-		});
-		instance.insure(1, 50, 0, 100, 5000, {value: 100});
-		instance.state().then(function(val) {
-			console.log(val);
-		});
-		instance.claim(1, 5000);
-		instance.state().then(function(val) {
-			console.log(val);
-		});
-		web3.eth.getBalance(InsuranceContract.address).then(function(val) {
-			console.log(val);
-		});
-		instance.approve('0x03cda1f3deeae2de4c73cfc4b93d3a50d0419c24');
-		instance.state().then(function(val) {
-			console.log(val);
-		});
-		instance.withdraw();
-		instance.state().then(function(val) {
-			console.log(val);
-		});
-	});
+	}
 };
