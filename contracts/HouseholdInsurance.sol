@@ -37,7 +37,7 @@ contract HouseholdInsurance {
 	address insurer;
 
 	// list of investors with their investment values
-	mapping(address => uint) investors;
+	mapping(address => uint) public investors;
 
 	// list of insured with their contract details
 	mapping(address => Policy) policies;
@@ -58,6 +58,10 @@ contract HouseholdInsurance {
 		assert(now < offset);
 		// area size must be positive
 		require(_area > 0);
+		// premium must be positive
+		require(_premium > 0);
+		// coverage must be greater then premium
+		require(_coverage > _premium);
 
 		// call sender gracefully, an insured
 		address insured = msg.sender;
@@ -66,11 +70,13 @@ contract HouseholdInsurance {
 		uint value = msg.value;
 
 		// additional validations
+		// not already insured
+		require(policies[insured].area == 0);
 		// we should have received not less then premium specified
 		require(value >= _premium);
 
 		// crate a policy
-		Policy storage policy = __policy(_area, _zoneId, _premium, _coverage);
+		Policy policy = __policy(_area, _zoneId, _premium, _coverage);
 
 		// assign policy to a client (insured)
 		policies[insured] = policy;
@@ -120,9 +126,27 @@ contract HouseholdInsurance {
 	// make an investment
 	function invest() payable {
 		// perform validations
-		assert(now < offset); // main period didn't start yet
+		// main period didn't start yet
+		assert(now < offset);
 
-		// TODO: implement logic
+		// call sender gracefully, an investor
+		address investor = msg.sender;
+
+		// how much wei we've received with the message
+		uint value = msg.value;
+
+		// current investor balance
+		uint current = investors[investor];
+
+		// new balance
+		uint balance = current + value;
+
+		// additional validations
+		// overflow check
+		assert(balance > current);
+
+		// update investors' balance accordingly
+		investors[investor] = balance;
 	}
 
 	// investor entrance

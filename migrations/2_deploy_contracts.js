@@ -22,22 +22,5 @@ Number.prototype.einstein = function () {
 
 module.exports = function(deployer) {
 	var InsuranceContract = artifacts.require("./HouseholdInsurance.sol");
-	deployer.deploy(
-		InsuranceContract,
-		[
-			0x01000, // zone 1
-			0x02000, // zone 2
-			0x03000, // zone 3
-			0x04000, // zone 4
-			0x05000  // zone 5
-		],
-		[
-			11..finney(), // price for zone 1
-			12..finney(), // price for zone 2
-			13..finney(), // price for zone 3
-			14..finney(), // price for zone 4
-			15..finney()  // price for zone 5
-		]
-	);
-
+	deployer.deploy(InsuranceContract);
 };
