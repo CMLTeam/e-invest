@@ -1,0 +1,49 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="style.css"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular-route.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular-resource.js"></script>
+
+    <script src="script.js"></script>
+</head>
+
+<body class="container-fluid" style="padding: 20px" ng-app="root" ng-controller="InsureeCtrl">
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"><div style="text-align: center; width: 200px"><b>E-Invest</b></div></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="insuree.html">Insuree Cabinet</a></li>
+                <li><a href="investor.html">Investor Cabinet</a></li>
+                <li class="active"><a href="broker.html">Broker Cabinet</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <button type="button" class="btn btn-default" onclick="">Exit</button>
+            </form>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div style="width: 800px; margin-left: -400px; position: relative; left: 50%;">
+    <h3 style="padding: 20px 0 20px 300px">Broker Cabinet</h3>
+    <form class="form-horizontal" autocomplete="off"></form>
+</div>
+</body>
