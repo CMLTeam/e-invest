@@ -46,10 +46,17 @@ contract HouseholdInsurance {
 	mapping(address => Policy) policies;
 
 
-	function HouseholdInsurance() {
+	function HouseholdInsurance(uint _offset, uint _length) {
 		// validate insurance settings (inputs)
+		// offset must be in the future,
+		// otherwise no investment/insurance possible
+		require(_offset > 0);
+		// length must be positive
+		require(_length > 0);
 
-
+		// setup contract settings
+		offset = _offset;
+		length = _length;
 	}
 
 	// client entrance (insured)
@@ -204,6 +211,7 @@ contract HouseholdInsurance {
 		uint _premium,
 		uint _coverage
 	) internal returns(Policy storage policy) {
+		// just set up all the fields
 		policy.area = _area;
 		policy.zoneId = _zoneId;
 		policy.premium = _premium;

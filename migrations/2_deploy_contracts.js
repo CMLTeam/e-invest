@@ -22,5 +22,9 @@ Number.prototype.einstein = function () {
 
 module.exports = function(deployer) {
 	var InsuranceContract = artifacts.require("./HouseholdInsurance.sol");
-	deployer.deploy(InsuranceContract);
+	deployer.deploy(
+		InsuranceContract,
+		(Date.now() / 1000 | 0) + 120, // 2 minutes from now
+		120 // 2 minutes
+	);
 };
