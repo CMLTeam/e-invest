@@ -94,7 +94,7 @@ contract HouseholdInsurance {
 		// perform validations
 		// we're in setup state
 		// main period didn't start yet
-		assert(now < offset);
+		assert(__setup());
 
 		// function execution block
 		_;
@@ -106,7 +106,7 @@ contract HouseholdInsurance {
 		// perform validations
 		// we're in the main (claim) period
 		// main period started and didn't finish yet
-		assert(now >= offset && now < offset + length);
+		assert(__main());
 
 		// function execution block
 		_;
@@ -118,7 +118,7 @@ contract HouseholdInsurance {
 		// perform validations
 		// we're in reward period
 		// main period ended
-		assert(now >= offset + length);
+		assert(__reward());
 
 		// function execution block
 		_;
@@ -390,6 +390,18 @@ contract HouseholdInsurance {
 
 	function __min(uint a, uint b) internal returns(uint min) {
 		min = a < b ? a : b;
+	}
+
+	function __setup() internal constant returns(bool) {
+		return now < offset;
+	}
+
+	function __main() internal constant returns(bool) {
+		return now >= offset && now < offset + length;
+	}
+
+	function __reward() internal constant returns(bool) {
+		return now >= offset + length;
 	}
 
 	// ----------------------- internal section -----------------------
