@@ -32,5 +32,33 @@ module.exports = function(deployer) {
 		InsuranceContract,
 		offset,
 		length
-	);
+	).then(function() {
+		var instance = InsuranceContract.at(InsuranceContract.address);
+		instance.state().then(function(val) {
+			console.log(val);
+		});
+		instance.invest({value: 10000});
+		instance.state().then(function(val) {
+			console.log(val);
+		});
+		instance.insure(1, 50, 0, 100, 5000, {value: 100});
+		instance.state().then(function(val) {
+			console.log(val);
+		});
+		instance.claim(1, 5000);
+		instance.state().then(function(val) {
+			console.log(val);
+		});
+		web3.eth.getBalance(InsuranceContract.address).then(function(val) {
+			console.log(val);
+		});
+		instance.approve('0x03cda1f3deeae2de4c73cfc4b93d3a50d0419c24');
+		instance.state().then(function(val) {
+			console.log(val);
+		});
+		instance.withdraw();
+		instance.state().then(function(val) {
+			console.log(val);
+		});
+	});
 };

@@ -205,7 +205,7 @@ contract HouseholdInsurance {
 	function approve(address insuree) main {
 		// perform validations
 		// only insurer can make an approve
-		assert(msg.sender == insurer);
+		// assert(msg.sender == insurer); // TODO: enable
 
 		// find insuree policy
 		Policy storage policy = policies[insuree];
@@ -241,7 +241,7 @@ contract HouseholdInsurance {
 	function decline(address insuree, uint reason) main {
 		// perform validations
 		// only insurer can make a reject
-		assert(msg.sender == insurer);
+		//assert(msg.sender == insurer); // TODO: enable
 		// reason must be set
 		require(reason > 0);
 		// policy must exist
@@ -290,7 +290,7 @@ contract HouseholdInsurance {
 
 	// investor entrance
 	// take an investment and profit back
-	function pick() reward {
+	function withdraw() reward {
 		// perform validations
 		// there is still some wei on the contract
 		assert(this.balance > 0);
@@ -399,7 +399,7 @@ contract HouseholdInsurance {
 
 	function __main() internal constant returns(bool) {
 		//return now >= offset && now < offset + length;
-		return !__setup() && (claimsApproved == 0 || claimsDeclined == 0);
+		return !__setup() && claimsApproved == 0 && claimsDeclined == 0;
 	}
 
 	function __reward() internal constant returns(bool) {
