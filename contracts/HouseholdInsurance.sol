@@ -31,6 +31,9 @@ contract HouseholdInsurance {
 
 		// an amount to cover, must not exceed policy coverage (optional)
 		uint amount;
+
+		// a reason id in case if a claim was rejected
+		uint reason;
 	}
 
 	// insurance fees and investments are accepted
@@ -80,7 +83,7 @@ contract HouseholdInsurance {
 	uint public claimsApproved;
 
 	// number of claims rejected
-	uint public claimsRejected;
+	uint public claimsDeclined;
 
 	function HouseholdInsurance(uint _offset, uint _length) {
 		// validate insurance settings (inputs)
@@ -146,19 +149,17 @@ contract HouseholdInsurance {
 
 		// create a claim
 		Claim storage claim = __claim(id, amount);
-		// extract policy
-		Policy memory policy = policies[insuree];
 
 		// call sender gracefully, an insuree
 		address insuree = msg.sender;
 
 		// additional validations
 		// a policy exists for the insuree
-		assert(policy.id != 0);
+		assert(policies[insuree].id != 0);
 		// only one pending claim is allowed
 		assert(claims[insuree].id == 0);
 		// claim amount cannot exceed policy coverage
-		require(amount <= policy.coverage);
+		require(amount <= policies[insuree].coverage);
 
 		// assign claim to a client (insuree)
 		claims[insuree] = claim;
@@ -175,12 +176,10 @@ contract HouseholdInsurance {
 		// main period
 		assert(now >= offset && now < offset + length);
 		// only insurer can make an approve
-		require(msg.sender == insurer);
+		assert(msg.sender == insurer);
 
 		// find insuree policy
 		Policy storage policy = policies[insuree];
-		// find insuree claim
-		Claim memory claim = claims[insuree];
 		// calculate how much coverage to pay
 		uint amount = policy.coverage - policy.claimed;
 
@@ -188,9 +187,9 @@ contract HouseholdInsurance {
 		// policy for this insuree must exist
 		assert(policy.id != 0);
 		// unresolved claim should exist
-		assert(claim.id != 0);
+		assert(claims[insuree].id != 0);
 		// there should be enough coverage left on the policy
-		require(amount > 0);
+		assert(amount > 0);
 		// overflow check
 		assert(amount <= policy.coverage);
 
@@ -203,16 +202,31 @@ contract HouseholdInsurance {
 		// update status
 		claimsApproved++;
 		totalAmountClaimed += amount;
+
+		// transfer the coverage (amount)
+		insuree.transfer(amount);
 	}
 
 	// insurer entrance
 	// decline a claim
-	function decline() {
+	function decline(address insuree, uint reason) {
 		// perform validations
-		assert(now >= offset && now < offset + length); // main period
-		require(msg.sender == insurer); // only insurer can make a reject
+		// main period
+		assert(now >= offset && now < offset + length);
+		// only insurer can make a reject
+		assert(msg.sender == insurer);
+		// reason must be set
+		require(reason > 0);
+		// policy must exist
+		assert(policies[insuree].id != 0);
+		// claim must exist
+		assert(claims[insuree].id != 0);
 
-		// TODO: implement logic
+		// update claim
+		claims[insuree].reason = reason;
+
+		// update status
+		claimsDeclined++;
 	}
 
 
@@ -268,7 +282,7 @@ contract HouseholdInsurance {
 		// additional validations
 		// the sender is a real investor
 		// and didn't picked up the wei back yet
-		require(invested > 0);
+		assert(invested > 0);
 
 		// calculate the share
 		uint share = totalInvested / invested * this.balance;
