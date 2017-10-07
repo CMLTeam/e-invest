@@ -114,8 +114,26 @@ angular.module('root', [])
             $scope.investPf = pf;
         };
         $scope.portfolios = [
-            {title: "Protfolio A", descr: "Low Risk - Low Profit"},
-            {title: "Protfolio B", descr: "Balanced Risk - Profit"},
-            {title: "Protfolio C", descr: "Increased Risk - High Profit"}
+            {title: "Portfolio A", descr: "Low Risk - Low Profit"},
+            {title: "Portfolio B", descr: "Balanced Risk - Profit"},
+            {title: "Portfolio C", descr: "Increased Risk - High Profit"}
+        ]
+    })
+    .controller('BrokerCtrl', function BrokerCtrl($scope, $timeout) {
+        $scope.claim = function (id) {
+            $scope.insureeId = null;
+            if (id)
+                $scope.claims.push({id: id});
+        };
+        $scope.approve = function (result, idx) {
+            $scope.claims[idx].result = result ? 'Approving' : 'Rejecting';
+            $timeout(function () {
+                $scope.claims.splice(idx, 1);
+            },2000);
+        };
+        $scope.claims = [
+            {id:'111'},
+            {id:'222'},
+            {id:'333'}
         ]
     });
