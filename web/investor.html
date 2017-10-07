@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.4.0/rzslider.js"></script>
 
     <script src="script.js"></script>
+    <script src="eth.js"></script>
 </head>
 
 <body class="container-fluid" style="padding: 20px" ng-app="root" ng-controller="InvestCtrl">
@@ -57,27 +58,27 @@
             <table class="pf_details">
                 <tr>
                     <td>Insuree Count</td>
-                    <td>130</td>
+                    <td>{{ pf.insureeCount }}</td>
                 </tr>
                 <tr>
                     <td>Avg House Area</td>
-                    <td>62</td>
+                    <td>{{ pf.avgHouseArea }}</td>
                 </tr>
                 <tr>
                     <td>Average Premium</td>
-                    <td>€400.00</td>
+                    <td>{{ pf.avgPremium|currency:'€':2 }}</td>
                 </tr>
                 <tr>
                     <td>Average Coverage</td>
-                    <td>€20,000.00</td>
+                    <td>{{ pf.avgCoverage|currency:'€':2 }}</td>
                 </tr>
                 <tr>
                     <td>Total Premium</td>
-                    <td>€2,300,000.00</td>
+                    <td>{{ pf.totalPremium|currency:'€':2 }}</td>
                 </tr>
                 <tr>
                     <td>Total Coverage</td>
-                    <td>€53,700,000.00</td>
+                    <td>{{ pf.totalCoverage|currency:'€':2 }}</td>
                 </tr>
             </table>
             
