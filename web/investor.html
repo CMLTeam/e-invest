@@ -83,15 +83,50 @@
     </div>
 
     <div class="invest_form" ng-class="{invest_form_show : investPf != null}">
+        <h4 style="text-align: center; margin-bottom: 40px; background-color: #d9edf7; padding: 10px"
+            ng-show="!ins_clicked">
+            You are investing in <b>{{ investPf.title }} ({{ investPf.descr }})</b></h4>
         <form class="form-horizontal" autocomplete="off">
-            <div class="form-group">
-                <label for="" class="col-sm-5 control-label">Investment Period</label>
-                <div class="col-sm-7">
-                    <div class="btn-group" role="group" aria-label="...">
-                        <button type="button" class="btn btn-default">One year</button>
-                        <button type="button" class="btn btn-default">6 Months</button>
-                        <button type="button" class="btn btn-default">3 Months</button>
+            <div class="ins_form" ng-class="{ins_form_hide: ins_clicked}">
+                <div class="form-group">
+                    <label for="" class="col-sm-5 control-label">Investment Period</label>
+                    <div class="col-sm-7">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default">One year</button>
+                            <button type="button" class="btn btn-default">6 Months</button>
+                            <button type="button" class="btn btn-default">3 Months</button>
+                        </div>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label for="startDate" class="col-sm-5 control-label">Start Date</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="startDate" placeholder=""
+                               ng-model="startDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="invAmount" class="col-sm-5 control-label">Investment Amount</label>
+                    <div class="col-sm-7">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="invAmount" placeholder=""
+                                   ng-model="invAmount">
+                            <div class="input-group-addon">Eth</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-5 col-sm-8">
+                        <button type="button" class="btn btn-lg btn-success"
+                                ng-click="ins_clicked=true">INVEST</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ins_greeting" ng-class="{ ins_greeting_show: ins_clicked}">
+                <div style="background-color: blanchedalmond; padding: 20px; font-size: 1.5em; text-align: center">
+                    <h2>Congratulations!</h2>
+                    <h2>You invesment was successful.</h2>
                 </div>
             </div>
         </form>
