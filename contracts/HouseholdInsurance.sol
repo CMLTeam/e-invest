@@ -61,6 +61,9 @@ contract HouseholdInsurance {
 	// total amount of wei all the investors invested
 	uint public totalInvested;
 
+	// total number of investors
+	uint public totalInvestors;
+
 	// total number of insurees
 	uint public totalInsurees;
 
@@ -280,8 +283,9 @@ contract HouseholdInsurance {
 		// update investors' balance accordingly
 		balances[investor] = balance;
 
-		// update total investments counter
+		// update status
 		totalInvested = total;
+		totalInvestors++;
 	}
 
 	// investor entrance
