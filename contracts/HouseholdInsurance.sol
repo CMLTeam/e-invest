@@ -1,21 +1,26 @@
 pragma solidity 0.4.15;
 
-// EverydayInsurance defines a typical contract between an insurer, investor and insured
-contract EverydayInsurance {
-	// policy settings and status of the insured
+// HouseholdInsurance defines a typical contract between an insurer, investor and insured
+// for a household insurance product
+contract HouseholdInsurance {
+	// policy settings including property details
 	struct Policy {
+		// area of the house/apartment in square meters
+		uint area;
+
+		// identifies a location of the property, can be a zip code
+		uint zoneId;
+
 		// total premium payed according to contract
 		uint premium;
 
 		// maximum amount to be payed to ensurer if a loss occur
-		uint cover;
+		uint coverage;
 	}
 
-	struct Claim {
-
-	}
-
-	struct Shit {
+	// profile of the insured:
+	// policy settings, current status, etc.
+	struct Insured {
 
 	}
 
@@ -35,29 +40,54 @@ contract EverydayInsurance {
 	mapping(address => uint) investors;
 
 	// list of insured with their contract details
-	mapping(address => Policy) insured;
+	mapping(address => Policy) policies;
 
-	function EverydayInsurance() {
+
+	function HouseholdInsurance() {
+		// validate insurance settings (inputs)
+
+
 	}
 
 	// client entrance (insured)
 	// sign of an insurance contract
 	// (buying an insurance product)
-	function insure() payable {
+	function insure(uint _area, uint _zoneId, uint _premium, uint _coverage) payable {
 		// perform validations
-		assert(now < offset); // main period didn't start yet
+		// main period didn't start yet
+		assert(now < offset);
+		// area size must be positive
+		require(_area > 0);
 
 		// call sender gracefully, an insured
 		address insured = msg.sender;
 
-		// TODO: implement logic
+		// how much wei we've received with the message
+		uint value = msg.value;
+
+		// additional validations
+		// we should have received not less then premium specified
+		require(value >= _premium);
+
+		// crate a policy
+		Policy storage policy = __policy(_area, _zoneId, _premium, _coverage);
+
+		// assign policy to a client (insured)
+		policies[insured] = policy;
+
+		// probably we need to return some money back, how much?
+		uint delta = value - _premium;
+
+		// transfer the delta back to insured
+		insured.transfer(delta);
 	}
 
 	// client entrance (insured)
 	// submit a claim
 	function claim() {
 		// perform validations
-		assert(now >= offset && now < offset + length); // main period
+		// main period
+		assert(now >= offset && now < offset + length);
 
 		// call sender gracefully, an insured
 		address insured = msg.sender;
@@ -71,7 +101,7 @@ contract EverydayInsurance {
 	function approve() {
 		// perform validations
 		assert(now >= offset && now < offset + length); // main period
-
+		require(msg.sender == insurer); // only insurer can make an approve
 		// TODO: implement logic
 	}
 
@@ -80,6 +110,7 @@ contract EverydayInsurance {
 	function decline() {
 		// perform validations
 		assert(now >= offset && now < offset + length); // main period
+		require(msg.sender == insurer); // only insurer can make a reject
 
 		// TODO: implement logic
 	}
@@ -107,5 +138,22 @@ contract EverydayInsurance {
 	function() payable {
 
 	}
+
+
+	// ----------------------- internal section -----------------------
+
+	function __policy(
+		uint _area,
+		uint _zoneId,
+		uint _premium,
+		uint _coverage
+	) internal returns(Policy storage policy) {
+		policy.area = _area;
+		policy.zoneId = _zoneId;
+		policy.premium = _premium;
+		policy.coverage = _coverage;
+	}
+
+	// ----------------------- internal section -----------------------
 
 }
