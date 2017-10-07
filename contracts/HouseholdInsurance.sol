@@ -1,11 +1,11 @@
 pragma solidity 0.4.15;
 
-// HouseholdInsurance defines a typical contract between an insurer, investor and insured
+// HouseholdInsurance defines a typical contract between an insurer, investor and insuree
 // for a household insurance product
 contract HouseholdInsurance {
 	// policy settings including property details
 	struct Policy {
-	// an unique id which defines this policy
+		// an unique id which defines this policy
 		uint id;
 
 		// area of the house/apartment in square meters
@@ -14,10 +14,10 @@ contract HouseholdInsurance {
 		// identifies a location of the property, can be a zip code
 		uint zoneId;
 
-		// total premium payed according to contract
+		// total premium paid according to contract
 		uint premium;
 
-		// maximum amount to be payed to ensurer if a loss occur
+		// maximum amount to be paid to ensurer if a loss occur
 		uint coverage;
 	}
 
@@ -32,13 +32,13 @@ contract HouseholdInsurance {
 
 	// insurance fees and investments are accepted
 	// only before "offset" date (set-up period)
-	uint offset; // unix timestamp
+	uint public offset; // unix timestamp
 
-	// claims from insured are accepted
+	// claims from insurees are accepted
 	// only after "offset" has passed and
 	// only during "length" period of time (main aka claim period)
-	// investors' rewards are payed after (reward period)
-	uint length; // unix timestamp
+	// investors' rewards are paid after (reward period)
+	uint public length; // unix timestamp
 
 	// an insurer, owner of this contract
 	address insurer;
@@ -46,14 +46,38 @@ contract HouseholdInsurance {
 	// list of investors with their investment values
 	mapping(address => uint) public balances;
 
-	// total amount of wei all the investors invested
-	uint public totalInvested;
-
-	// list of insured with their contract details
+	// list of insurees with their contract details
 	mapping(address => Policy) policies;
 
 	// list of unresolved claims, nor approved, neither rejected
 	mapping(address => Claim) claims;
+
+	// total amount of wei all the investors invested
+	uint public totalInvested;
+
+	// total number of insurees
+	uint public totalInsurees;
+
+	// total insured area
+	uint public totalArea;
+
+	// total premium paid by insurees
+	uint public totalPremium;
+
+	// total coverage, total amount to claim by insurees
+	uint public totalCoverage;
+
+	// total amount of claims submitted, including approved and rejected
+	uint public totalClaims;
+
+	// total amount payed back to insurees
+	uint public totalAmountClaimed;
+
+	// number of claims approved
+	uint public claimsApproved;
+
+	// number of claims rejected
+	uint public claimsRejected;
 
 	function HouseholdInsurance(uint _offset, uint _length) {
 		// validate insurance settings (inputs)
@@ -71,7 +95,7 @@ contract HouseholdInsurance {
 		insurer = msg.sender;
 	}
 
-	// client entrance (insured)
+	// client entrance (insuree)
 	// sign of an insurance contract
 	// (buying an insurance product)
 	function insure(uint id, uint area, uint zoneId, uint premium, uint coverage) payable {
@@ -82,29 +106,35 @@ contract HouseholdInsurance {
 		// crate a policy
 		Policy storage policy = __policy(id, area, zoneId, premium, coverage);
 
-		// call sender gracefully, an insured
-		address insured = msg.sender;
+		// call sender gracefully, an insuree
+		address insuree = msg.sender;
 
 		// how much wei we've received with the message
 		uint value = msg.value;
 
 		// additional validations
-		// not already insured
-		assert(policies[insured].id == 0);
+		// not already insuree
+		assert(policies[insuree].id == 0);
 		// we should have received not less then premium specified
 		require(value >= premium);
 
-		// assign policy to a client (insured)
-		policies[insured] = policy;
+		// assign policy to a client (insuree)
+		policies[insuree] = policy;
 
 		// probably we need to return some money back, how much?
 		uint delta = value - premium;
 
-		// transfer the delta back to insured
-		insured.transfer(delta);
+		// update status
+		totalInsurees++;
+		totalArea += area;
+		totalPremium += premium;
+		totalCoverage += coverage;
+
+		// transfer the delta back to insuree
+		insuree.transfer(delta);
 	}
 
-	// client entrance (insured)
+	// client entrance (insuree)
 	// submit a claim
 	function claim(uint id, uint amount) {
 		// perform validations
@@ -114,17 +144,17 @@ contract HouseholdInsurance {
 		// create a claim
 		Claim storage claim = __claim(id, amount);
 
-		// call sender gracefully, an insured
-		address insured = msg.sender;
+		// call sender gracefully, an insuree
+		address insuree = msg.sender;
 
 		// additional validations
-		// a policy exists for the insured
-		assert(policies[insured].id != 0);
+		// a policy exists for the insuree
+		assert(policies[insuree].id != 0);
 		// only one pending claim is allowed
-		assert(claims[insured].id == 0);
+		assert(claims[insuree].id == 0);
 
-		// assign claim to a client (insured)
-		claims[insured] = claim;
+		// assign claim to a client (insuree)
+		claims[insuree] = claim;
 	}
 
 
@@ -194,7 +224,7 @@ contract HouseholdInsurance {
 		// call sender gracefully, an investor
 		address investor = msg.sender;
 
-		// calculate the investor's share
+		// get total amount investor invested
 		uint invested = balances[investor];
 
 		// additional validations
@@ -212,9 +242,35 @@ contract HouseholdInsurance {
 		investor.transfer(share);
 	}
 
+	// calculates how much weir an investor can
+	// get back after main period passed (reward period)
+	function share() constant returns(uint) {
+		// call sender gracefully, an investor
+		address investor = msg.sender;
 
+		// get total amount investor invested
+		uint invested = balances[investor];
 
+		// calculate the share
+		return totalInvested / invested * this.balance;
+	}
 
+	// get current state of the contract
+	function state() constant returns (string) {
+		// setup period is where investments and insurees are welcome
+		if(now < offset) {
+			return "setup: accepting investments";
+		}
+		// main period is where investmenets are not accepted anymore
+		// insurees may submit their claims and insurer may approve or reject them
+		else if(now < offset + length) {
+			return "main: accepting claims";
+		}
+		// reward period is where investors get their rewards
+		else {
+			return "reward: paying rewards to investors";
+		}
+	}
 
 
 	// ----------------------- internal section -----------------------
