@@ -2,8 +2,20 @@ pragma solidity 0.4.15;
 
 // EverydayInsurance defines a typical contract between an insurer, investor and insured
 contract EverydayInsurance {
-	// insured specific contract data
-	struct ContractDetails {
+	// policy settings and status of the insured
+	struct Policy {
+		// total premium payed according to contract
+		uint premium;
+
+		// maximum amount to be payed to ensurer if a loss occur
+		uint cover;
+	}
+
+	struct Claim {
+
+	}
+
+	struct Shit {
 
 	}
 
@@ -19,8 +31,11 @@ contract EverydayInsurance {
 
 	address insurer;
 
+	// list of investors with their investment values
 	mapping(address => uint) investors;
-	mapping(address => ContractDetails) insured;
+
+	// list of insured with their contract details
+	mapping(address => Policy) insured;
 
 	function EverydayInsurance() {
 	}
@@ -72,7 +87,7 @@ contract EverydayInsurance {
 
 	// investor entrance
 	// make an investment
-	function invest() {
+	function invest() payable {
 		// perform validations
 		assert(now < offset); // main period didn't start yet
 
@@ -86,6 +101,11 @@ contract EverydayInsurance {
 		assert(now >= offset + length); // main period ended
 
 		// TODO: implement logic
+	}
+
+	// fallback function
+	function() payable {
+
 	}
 
 }
