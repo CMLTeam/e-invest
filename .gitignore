@@ -1,0 +1,13 @@
+syntax:glob
+
+build/
+.idea/
+*.iws
+*.iml
+*.ipr
+
+
+*.sh
+key
+pwd
+
