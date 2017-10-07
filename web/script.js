@@ -1,4 +1,4 @@
-angular.module('root', [])
+angular.module('root', ['rzModule'])
     .controller('InsureeCtrl', function InsureeCtrl($scope) {
 
         $scope.calc = calcInsurance;
@@ -109,15 +109,31 @@ angular.module('root', [])
             });
         }
     })
-    .controller('InvestCtrl', function InvestCtrl($scope) {
+    .controller('InvestCtrl', function InvestCtrl($scope, $filter) {
+        var df = $filter('date');
         $scope.invest = function (pf) {
-            $scope.investPf = pf;
+            $scope.inv = {};
+            $scope.inv.period = 12;
+            $scope.inv.startDate = df(new Date(), 'yyyy-MM-dd');
+            $scope.inv.dueDate = df(new Date(new Date().getTime() + $scope.inv.period + 365 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
+            $scope.inv.pf = pf;
+            $scope.inv.invAmount = 0;
+            $scope.slider = {
+                options: {
+                    floor: 0,
+                    ceil: $scope.balance,
+                    translate: function(value) {
+                        return '€' + value;
+                    }
+                }
+            }
         };
         $scope.portfolios = [
             {title: "Portfolio A", descr: "Low Risk - Low Profit"},
             {title: "Portfolio B", descr: "Balanced Risk - Profit"},
             {title: "Portfolio C", descr: "Increased Risk - High Profit"}
-        ]
+        ];
+        $scope.balance = 15000;
     })
     .controller('BrokerCtrl', function BrokerCtrl($scope, $timeout) {
         $scope.claim = function (id) {
@@ -129,11 +145,14 @@ angular.module('root', [])
             $scope.claims[idx].result = result ? 'Approving' : 'Rejecting';
             $timeout(function () {
                 $scope.claims.splice(idx, 1);
-            },2000);
+            }, 2000);
         };
         $scope.claims = [
             {id:'111'},
             {id:'222'},
             {id:'333'}
         ]
+    })
+    .controller('AboutCtrl', function AboutCtrl($scope) {
+
     });

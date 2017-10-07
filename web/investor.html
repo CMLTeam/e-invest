@@ -3,12 +3,15 @@
 
     <link rel="stylesheet" href="bootstrap.css"/>
     <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.4.0/rzslider.css"/>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular-route.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular-resource.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.4.0/rzslider.js"></script>
 
     <script src="script.js"></script>
 </head>
@@ -34,6 +37,7 @@
                 <li><a href="insuree.html">Insuree Cabinet</a></li>
                 <li class="active"><a href="investor.html">Investor Cabinet</a></li>
                 <li><a href="broker.html">Broker Cabinet</a></li>
+                <li><a href="about.html">About</a></li>
             </ul>
             <form class="navbar-form navbar-right">
                 <button type="button" class="btn btn-default" onclick="">Exit</button>
@@ -45,7 +49,7 @@
 <div style="width: 1000px; margin-left: -500px; position: relative; left: 50%;">
     <h3 style="padding: 20px 0 20px 350px">Investor Cabinet</h3>
 
-    <div class="portfolios" ng-class="{ portfolios_hide : investPf != null }">
+    <div class="portfolios" ng-class="{ portfolios_hide : inv != null }">
         <div class="pf" ng-repeat="pf in portfolios">
             <div class="pf_title">{{ pf.title }}</div>
             <div class="pf_descr">{{ pf.descr }}</div>
@@ -82,39 +86,79 @@
         </div>
     </div>
 
-    <div class="invest_form" ng-class="{invest_form_show : investPf != null}">
+    <div class="invest_form" ng-class="{invest_form_show : inv != null}">
         <h4 style="text-align: center; margin-bottom: 40px; background-color: #d9edf7; padding: 10px"
             ng-show="!ins_clicked">
-            You are investing in <b>{{ investPf.title }} ({{ investPf.descr }})</b></h4>
+            You are investing in <b>{{ inv.pf.title }} ({{ inv.pf.descr }})</b></h4>
         <form class="form-horizontal" autocomplete="off">
             <div class="ins_form" ng-class="{ins_form_hide: ins_clicked}">
                 <div class="form-group">
+                    <label for="balance" class="col-sm-5 control-label">Your Balance</label>
+                    <div class="col-sm-5">
+                        <input type="text" readonly="" class="form-control" id="balance" placeholder=""
+                               value="{{balance|currency:'€':2}}">
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="" class="col-sm-5 control-label">Investment Period</label>
-                    <div class="col-sm-7">
+                    <div class="col-sm-5">
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="button" class="btn btn-default">One year</button>
-                            <button type="button" class="btn btn-default">6 Months</button>
-                            <button type="button" class="btn btn-default">3 Months</button>
+                            <button type="button" class="btn btn-default" ng-click="inv.period=12" ng-class="{active: inv.period==12}">One year</button>
+                            <button type="button" class="btn btn-default" ng-click="inv.period=6" ng-class="{active: inv.period==6}">6 Months</button>
+                            <button type="button" class="btn btn-default" ng-click="inv.period=3" ng-class="{active: inv.period==3}">3 Months</button>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="startDate" class="col-sm-5 control-label">Start Date</label>
-                    <div class="col-sm-7">
+                    <div class="col-sm-5">
                         <input type="text" class="form-control" id="startDate" placeholder=""
-                               ng-model="startDate">
+                               ng-model="inv.startDate">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="invAmount" class="col-sm-5 control-label">Investment Amount</label>
-                    <div class="col-sm-7">
+                    <div class="col-sm-5">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="invAmount" placeholder=""
-                                   ng-model="invAmount">
-                            <div class="input-group-addon">Eth</div>
+                            <div style="width: 400px" ng-if="inv">
+                                <rzslider
+                                        rz-slider-model="inv.invAmount"
+                                        rz-slider-options="slider.options"></rzslider>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <hr/>
+                <div class="form-group">
+                    <label for="expProfit" class="col-sm-5 control-label">Expected Profit</label>
+                    <div class="col-sm-5">
+                        <input type="text" readonly="" class="form-control" id="expProfit" placeholder=""
+                               value="{{inv.expProfit|currency:'€':2}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="maxProfit" class="col-sm-5 control-label">Maximum Profit</label>
+                    <div class="col-sm-5">
+                        <input type="text" readonly="" class="form-control" id="maxProfit" placeholder=""
+                               value="{{inv.maxProfit|currency:'€':2}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="maxLoss" class="col-sm-5 control-label">Maximum Loss</label>
+                    <div class="col-sm-5">
+                        <input type="text" readonly="" class="form-control" id="maxLoss" placeholder=""
+                               value="{{inv.maxLoss|currency:'€':2}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dueDate" class="col-sm-5 control-label">Due Date</label>
+                    <div class="col-sm-5">
+                        <input type="text" readonly="" class="form-control" id="dueDate" placeholder=""
+                               ng-model="inv.dueDate">
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <div class="col-sm-offset-5 col-sm-8">
                         <button type="button" class="btn btn-lg btn-success"
