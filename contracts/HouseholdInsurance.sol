@@ -40,6 +40,7 @@ contract HouseholdInsurance {
 	// investors' rewards are payed after (reward period)
 	uint length; // unix timestamp
 
+	// an insurer, owner of this contract
 	address insurer;
 
 	// list of investors with their investment values
@@ -65,6 +66,9 @@ contract HouseholdInsurance {
 		// setup contract settings
 		offset = _offset;
 		length = _length;
+
+		// set up the insurer - creator of the contract
+		insurer = msg.sender;
 	}
 
 	// client entrance (insured)
@@ -76,7 +80,7 @@ contract HouseholdInsurance {
 		assert(now < offset);
 
 		// crate a policy
-		Policy policy = __policy(id, area, zoneId, premium, coverage);
+		Policy storage policy = __policy(id, area, zoneId, premium, coverage);
 
 		// call sender gracefully, an insured
 		address insured = msg.sender;
@@ -108,7 +112,7 @@ contract HouseholdInsurance {
 		assert(now >= offset && now < offset + length);
 
 		// create a claim
-		claims[insured] = __claim(_id, amount);
+		Claim storage claim = __claim(id, amount);
 
 		// call sender gracefully, an insured
 		address insured = msg.sender;
@@ -245,9 +249,9 @@ contract HouseholdInsurance {
 	// allocates a Claim in storage
 	function __claim(uint _id, uint _amount) internal returns(Claim storage claim) {
 		// claim id defined
-		require(id > 0);
+		require(_id > 0);
 		// amount claimed must be positive
-		require(amount > 0);
+		require(_amount > 0);
 
 		// set up the fields
 		claim.id = _id;
