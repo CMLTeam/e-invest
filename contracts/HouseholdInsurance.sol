@@ -399,7 +399,7 @@ contract HouseholdInsurance {
 
 	function __main() internal constant returns(bool) {
 		//return now >= offset && now < offset + length;
-		return !__setup() && claimsApproved == 0;
+		return !__setup() && (claimsApproved == 0 || claimsDeclined == 0);
 	}
 
 	function __reward() internal constant returns(bool) {
