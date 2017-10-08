@@ -145,6 +145,24 @@ angular.module('root', ['rzModule'])
                 }
             }
         };
+
+        $scope.investBlockchain = function() {
+            var value = eurToWei($scope.inv.invAmount);
+            var contract = getContract();
+            contract.invest({value: value, gasPrice: 10000000000}, function(e, r) {
+                if(!e) {
+                    console.log(r);
+                    $scope.ins_clicked=true;
+                    $scope.$apply();
+                }
+                else {
+                    console.error(e);
+                }
+            });
+        };
+
+
+
         web3Promise.then(function () {
             getInsuranceDataFromBlockchain(function(insuranceData) {
                 var defInsData = {
