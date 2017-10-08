@@ -90,11 +90,11 @@ contract HouseholdInsurance {
 
 	// during setup period contract accepts investments
 	// and insurance contract signing
-	modifier setup {
+	modifier __setup {
 		// perform validations
 		// we're in setup state
 		// main period didn't start yet
-		assert(__setup());
+		assert(stateCode() == 0);
 
 		// function execution block
 		_;
@@ -102,11 +102,11 @@ contract HouseholdInsurance {
 
 	// during main period contract accepts claims
 	// it allows an insurer to accept / reject them
-	modifier main {
+	modifier __main {
 		// perform validations
 		// we're in the main (claim) period
 		// main period started and didn't finish yet
-		assert(__main());
+		assert(stateCode() == 1);
 
 		// function execution block
 		_;
@@ -114,11 +114,11 @@ contract HouseholdInsurance {
 
 	// during the reward period contract allows
 	// investors to get their investments and shares back
-	modifier reward {
+	modifier __reward {
 		// perform validations
 		// we're in reward period
 		// main period ended
-		assert(__reward());
+		assert(stateCode() == 2);
 
 		// function execution block
 		_;
@@ -143,7 +143,7 @@ contract HouseholdInsurance {
 	// client entrance (insuree)
 	// sign of an insurance contract
 	// (buying an insurance product)
-	function insure(uint id, uint area, uint zoneId, uint premium, uint coverage) setup payable {
+	function insure(uint id, uint area, uint zoneId, uint premium, uint coverage) __setup payable {
 		// crate a policy
 		Policy storage policy = __policy(id, area, zoneId, premium, coverage);
 
@@ -177,7 +177,7 @@ contract HouseholdInsurance {
 
 	// client entrance (insuree)
 	// submit a claim
-	function claim(uint id, uint amount) main {
+	function claim(uint id, uint amount) __main {
 		// create a claim
 		Claim storage _claim = __claim(id, amount);
 
@@ -200,12 +200,12 @@ contract HouseholdInsurance {
 	}
 
 
-	// client entrance (insuree)
-	// submit a claim
-	function claimOnBehalf(address insuree, uint id, uint amount) main {
+	// insurer entrance
+	// submit a claim on behalf of insuree
+	function claimFor(address insuree, uint id, uint amount) __main {
 		// perform validations
 		// only insurer can make an approve
-		// assert(msg.sender == insurer); // TODO: enable
+		assert(msg.sender == insurer); // TODO: enable
 
 		// create a claim
 		Claim storage _claim = __claim(id, amount);
@@ -227,10 +227,10 @@ contract HouseholdInsurance {
 
 	// insurer entrance
 	// approve a claim
-	function approve(address insuree) main {
+	function approve(address insuree) __main {
 		// perform validations
 		// only insurer can make an approve
-		// assert(msg.sender == insurer); // TODO: enable
+		assert(msg.sender == insurer); // TODO: enable
 
 		// find insuree policy
 		Policy storage policy = policies[insuree];
@@ -263,10 +263,10 @@ contract HouseholdInsurance {
 
 	// insurer entrance
 	// decline a claim
-	function decline(address insuree, uint reason) main {
+	function decline(address insuree, uint reason) __main {
 		// perform validations
 		// only insurer can make a reject
-		//assert(msg.sender == insurer); // TODO: enable
+		assert(msg.sender == insurer); // TODO: enable
 		// reason must be set
 		require(reason > 0);
 		// policy must exist
@@ -284,7 +284,7 @@ contract HouseholdInsurance {
 
 	// investor entrance
 	// make an investment
-	function invest() setup payable {
+	function invest() __setup payable {
 		// call sender gracefully, an investor
 		address investor = msg.sender;
 
@@ -315,7 +315,7 @@ contract HouseholdInsurance {
 
 	// investor entrance
 	// take an investment and profit back
-	function withdraw() reward {
+	function withdraw() __reward {
 		// perform validations
 		// there is still some wei on the contract
 		assert(this.balance > 0);
@@ -356,18 +356,55 @@ contract HouseholdInsurance {
 
 	// get current state of the contract
 	function state() constant returns (string) {
+		// get the state code
+		uint code = stateCode();
+
 		// setup period is where investments and insurees are welcome
-		if(__setup()) {
+		if(code == 0) {
 			return "setup: accepting investments";
 		}
 		// main period is where investmenets are not accepted anymore
 		// insurees may submit their claims and insurer may approve or reject them
-		else if(__main()) {
+		else if(code == 1) {
 			return "main: accepting claims";
 		}
 		// reward period is where investors get their rewards
 		else {
 			return "reward: paying rewards to investors";
+		}
+	}
+
+	/*
+		// production mode
+		// 0 - setup
+		// 1 - main
+		// 2 - reward
+		function stateCode() constant returns(uint) {
+			if(now < offset) {
+				return 0;
+			}
+			else if(now - offset < length) {
+				return 1;
+			}
+			else {
+				return 2;
+			}
+		}
+	*/
+
+	// testing mode
+	// 0 - setup
+	// 1 - main
+	// 2 - reward
+	function stateCode() constant returns(uint) {
+		if(totalInvestors == 0 || totalInsurees == 0) {
+			return 0;
+		}
+		else if(claimsApproved == 0 && claimsDeclined == 0) {
+			return 1;
+		}
+		else {
+			return 2;
 		}
 	}
 
@@ -415,21 +452,6 @@ contract HouseholdInsurance {
 
 	function __min(uint a, uint b) internal returns(uint min) {
 		min = a < b ? a : b;
-	}
-
-	function __setup() internal constant returns(bool) {
-		//return now < offset;
-		return totalInvestors == 0 || totalInsurees == 0;
-	}
-
-	function __main() internal constant returns(bool) {
-		//return now >= offset && now < offset + length;
-		return !__setup() && claimsApproved == 0 && claimsDeclined == 0;
-	}
-
-	function __reward() internal constant returns(bool) {
-		//return now >= offset + length;
-		return !__setup() && !__main();
 	}
 
 	// ----------------------- internal section -----------------------
