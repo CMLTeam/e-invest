@@ -128,11 +128,23 @@ angular.module('root', ['rzModule'])
                 }
             }
         };
-        $scope.portfolios = [
-            {title: "Portfolio A", descr: "Low Risk - Low Profit"},
-            {title: "Portfolio B", descr: "Balanced Risk - Profit"},
-            {title: "Portfolio C", descr: "Increased Risk - High Profit"}
-        ];
+        web3Promise.then(function () {
+            var insuranceData = getInsuranceDataFromBlockchain();
+            var defInsData = {
+                insureeCount: 130,
+                avgHouseArea: 62,
+                avgPremium: 400,
+                avgCoverage: 20000,
+                totalPremium: 2300000,
+                totalCoverage: 53700000
+            };
+            $scope.portfolios = [
+                angular.extend({title: "Portfolio A", descr: "Low Risk - Low Profit"}, insuranceData),
+                angular.extend({title: "Portfolio B", descr: "Balanced Risk - Profit"}, defInsData),
+                angular.extend({title: "Portfolio C", descr: "Increased Risk - High Profit"}, defInsData)
+            ];
+            $scope.$apply();
+        });
         $scope.balance = 15000;
     })
     .controller('BrokerCtrl', function BrokerCtrl($scope, $timeout) {
