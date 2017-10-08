@@ -346,8 +346,12 @@ var abi = [
     }
 ];
 
+function getSmartContractAddr() {
+    return localStorage.smartContractAddr;
+}
+
 function getContract() {
-    return web3.eth.contract(abi).at(address);
+    return web3.eth.contract(abi).at(getSmartContractAddr());
 }
 
 function eurToEth(val) {
