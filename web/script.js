@@ -202,7 +202,7 @@ angular.module('root', ['rzModule'])
 
         $scope.claim = function (id) {
             var contract = getContract();
-            contract.claimOnBehalf(id, 1, 1, function(e, r) {
+            contract.claimFor(id, 1, 1, function(e, r) {
                 if(!e) {
                     console.log(r);
                     $scope.insureeId = null;
