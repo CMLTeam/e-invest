@@ -6,6 +6,23 @@ angular.module('root', ['rzModule'])
         $scope.postalCode = "01067";
         $scope.apptArea = 50.0;
 
+        $scope.insure = function(area, zoneId) {
+            var premium = eurToWei($scope.price);
+            var coverage = eurToWei($scope.coveredAmt);
+
+            var contract = getContract();
+            contract.insure(1, area, zoneId, premium, coverage, {value: premium, gasPrice: 10000000000}, function(e, r) {
+                if(!e) {
+                    console.log(r);
+                    $scope.ins_clicked=true;
+                    $scope.$apply();
+                }
+                else {
+                    console.error(e);
+                }
+            });
+        };
+
         function calcInsurance(postalCode, apptArea) {
             var startDate = '2017-11-01';
             var endDate = '2018-11-01';
@@ -129,23 +146,35 @@ angular.module('root', ['rzModule'])
             }
         };
         web3Promise.then(function () {
-            var insuranceData = getInsuranceDataFromBlockchain();
-            var defInsData = {
-                insureeCount: 130,
-                avgHouseArea: 62,
-                avgPremium: 400,
-                avgCoverage: 20000,
-                totalPremium: 2300000,
-                totalCoverage: 53700000
-            };
-            $scope.portfolios = [
-                angular.extend({title: "Portfolio A", descr: "Low Risk - Low Profit"}, insuranceData),
-                angular.extend({title: "Portfolio B", descr: "Balanced Risk - Profit"}, defInsData),
-                angular.extend({title: "Portfolio C", descr: "Increased Risk - High Profit"}, defInsData)
-            ];
-            $scope.$apply();
+            getInsuranceDataFromBlockchain(function(insuranceData) {
+                var defInsData = {
+                    insureeCount: 130,
+                    avgHouseArea: 62,
+                    avgPremium: 400,
+                    avgCoverage: 20000,
+                    totalPremium: 2300000,
+                    totalCoverage: 53700000
+                };
+                $scope.portfolios = [
+                    angular.extend({title: "Portfolio A", descr: "Low Risk - Low Profit"}, insuranceData),
+                    angular.extend({title: "Portfolio B", descr: "Balanced Risk - Profit"}, defInsData),
+                    angular.extend({title: "Portfolio C", descr: "Increased Risk - High Profit"}, defInsData)
+                ];
+                $scope.$apply();
+            });
+
+            console.log("default account: " + web3.eth.defaultAccount);
+            web3.eth.getBalance(web3.eth.defaultAccount, function(e, r) {
+                if(!e) {
+                    console.log("ETH: " + r);
+                    $scope.balance = weiToEur(r);
+                    $scope.$apply();
+                }
+                else {
+                    console.error(e);
+                }
+            });
         });
-        $scope.balance = 15000;
     })
     .controller('BrokerCtrl', function BrokerCtrl($scope, $timeout) {
         $scope.claim = function (id) {

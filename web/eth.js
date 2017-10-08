@@ -1,5 +1,5 @@
 //var address = '0x662a8439045d73cfc5a7e15ce651e6b63ec24c9f';
-var address = '0x810658c6bfb88f3812eccf5c11ea39b54158a888';
+var address = '0xde09e74d4888bc4e65f589e8c13bce9f71ddf4c7'; // window.location.search;
 var inputAddress = '0x03cdA1F3DEeaE2de4C73cfC4B93d3A50D0419C24';
 var ethToEuro = 261.592;
 
@@ -285,80 +285,84 @@ var abi = [
     }
 ];
 
-function getInsuranceDataFromBlockchain() {
+function getContract() {
+    return web3.eth.contract(abi).at(address);
+}
+
+function eurToEth(val) {
+    return val / ethToEuro;
+}
+
+function ethToEur(val) {
+    return val * ethToEuro;
+}
+
+function eurToWei(val) {
+    var eth = eurToEth(val);
+    return web3.toWei(eth, "ether");
+}
+
+function weiToEur(val) {
+    var eth = web3.fromWei(val, "ether");
+    return ethToEur(eth);
+}
+
+function getInsuranceDataFromBlockchain(callback) {
 // Total Insurees
+    var smartContract = getContract();
 
-    var insureeCount = 0;
-
-    var smartContract = web3.eth.contract(abi).at(address);
-    smartContract.totalInsurees(function (e, r) {
-        if (!e) {
-            insureeCount = r.toString(10);
+    smartContract.totalInsurees(function(e, r) {
+        if(!e) {
+            var insureeCount = r.toString(10);
+            console.log("insureeCount:" + insureeCount);
+            smartContract.totalArea(function(e, r) {
+                if(!e) {
+                    var totalArea = r.toString(10);
+                    console.log("totalArea:" + totalArea);
+                    smartContract.totalPremium(function(e, r) {
+                        if(!e) {
+                            var totalPremium = r.toString(10);
+                            console.log("totalPremium:" + totalPremium);
+                            smartContract.totalCoverage(function(e, r) {
+                                if(!e) {
+                                    var totalCoverage = r.toString(10);
+                                    console.log("totalCoverage:" + totalCoverage);
+                                    if (insureeCount > 0) {
+                                        var avgHouseArea = totalArea / insureeCount;
+                                        var avgPremium = totalPremium / insureeCount;
+                                        var avgCoverage = totalCoverage / insureeCount;
+                                        callback({
+                                            insureeCount: insureeCount,
+                                            avgHouseArea: avgHouseArea,
+                                            avgPremium: weiToEur(avgPremium),
+                                            avgCoverage: weiToEur(avgCoverage),
+                                            totalPremium: weiToEur(totalPremium),
+                                            totalCoverage: weiToEur(totalCoverage)
+                                        });
+                                    }
+                                    else {
+                                        console.warn("insureeCount = 0!");
+                                    }
+                                }
+                                else {
+                                    console.error(e);
+                                }
+                            });
+                        }
+                        else {
+                            console.error(e);
+                        }
+                    });
+                }
+                else {
+                    console.error(e);
+                }
+            });
         }
         else {
             console.error(e);
         }
     });
-
-// Avg House Area
-
-    var avgHouseArea = 0;
-    var totalArea = 0;
-
-    smartContract.totalArea(function (e, r) {
-        if (!e) {
-            totalArea = r.toString(10);
-        } else {
-            console.error(e);
-        }
-    });
-
-// Average Premium
-
-    var totalPremium = 0;
-    var avgPremium = 0;
-
-    smartContract.totalPremium(function (e, r) {
-        if (!e) {
-            totalPremium = ethToEuro * r.toString(10);
-        } else {
-            console.error(e);
-        }
-    });
-
-// Average Coverage
-
-    var avgCoverage = 0;
-    var totalCoverage = 0;
-
-    smartContract.totalCoverage(function (e, r) {
-        if (!e) {
-            totalCoverage = ethToEuro * r.toString(10);
-        } else {
-            console.error(e);
-        }
-    });
-
-    if (insureeCount > 0) {
-        avgHouseArea = totalArea / insureeCount;
-        avgPremium = totalPremium / insureeCount;
-        avgCoverage = totalCoverage / insureeCount;
-    }
-
-    console.log(insureeCount);
-    console.log(avgHouseArea);
-    console.log(avgPremium);
-    console.log(avgCoverage);
-    console.log(totalPremium);
-    console.log(totalCoverage);
-    return {
-        insureeCount: insureeCount,
-        avgHouseArea: avgHouseArea,
-        avgPremium: avgPremium,
-        avgCoverage: avgCoverage,
-        totalPremium: totalPremium,
-        totalCoverage: totalCoverage
-    }
 }
 /*
 
@@ -374,9 +378,14 @@ web3.eth.contract(abi).at(address).balances(inputAddress, function (e, r) {
 
 var web3Promise = new Promise(function (resolve, reject) {
     window.addEventListener('load', function() {
-        if (typeof web3 !== 'undefined')
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
             resolve(web3);
-        else
+        }
+        else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
             reject();
+        }
     });
 });

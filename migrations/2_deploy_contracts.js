@@ -31,6 +31,7 @@ console.log("length: " + length);
 module.exports = async function(deployer) {
 	let InsuranceContract = artifacts.require("./HouseholdInsurance.sol");
 	await deployer.deploy(InsuranceContract, offset, length);
+/*
 	let instance = InsuranceContract.at(InsuranceContract.address);
 	let val = await instance.state();
 	console.log(val.toString(10));
@@ -45,7 +46,7 @@ module.exports = async function(deployer) {
 	instance.claim(0x01, 5000);
 	val = await instance.state();
 	console.log(val);
-	await instance.decline('0x7e5f4552091a69125d5dfcb7b8c2659029395bdf', 0x01);
+	await instance.decline('0x03cdA1F3DEeaE2de4C73cfC4B93d3A50D0419C24', 0x01);
 	display_balance();
 	val = await instance.state();
 	console.log(val);
@@ -53,6 +54,7 @@ module.exports = async function(deployer) {
 	display_balance();
 	val = await instance.state();
 	console.log(val);
+*/
 
 	function display_balance() {
 		web3.eth.getBalance(InsuranceContract.address, function(err, val) {
