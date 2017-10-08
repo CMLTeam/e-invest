@@ -202,7 +202,7 @@ angular.module('root', ['rzModule'])
 
         $scope.claim = function (id) {
             var contract = getContract();
-            contract.claimFor(id, 1, 1, function(e, r) {
+            contract.claimFor(id, 1, 1, {gasPrice: 10000000000}, function(e, r) {
                 if(!e) {
                     console.log(r);
                     $scope.insureeId = null;
@@ -221,7 +221,7 @@ angular.module('root', ['rzModule'])
             var address = $scope.claims[idx].id;
             var contract = getContract();
             if(result) {
-                contract.approve(address, function(e, r) {
+                contract.approve(address, {gasPrice: 10000000000}, function(e, r) {
                     if(!e) {
                         console.log(r);
                         $scope.claims.splice(idx, 1);
@@ -234,7 +234,7 @@ angular.module('root', ['rzModule'])
                 });
             }
             else {
-                contract.decline(address, 1, function(e, r) {
+                contract.decline(address, 1, {gasPrice: 10000000000}, function(e, r) {
                     if(!e) {
                         console.log(r);
                         $scope.claims.splice(idx, 1);
