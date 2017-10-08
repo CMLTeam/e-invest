@@ -205,7 +205,7 @@ contract HouseholdInsurance {
 	function claimFor(address insuree, uint id, uint amount) __main {
 		// perform validations
 		// only insurer can make an approve
-		assert(msg.sender == insurer);
+		//assert(msg.sender == insurer);
 
 		// create a claim
 		Claim storage _claim = __claim(id, amount);
@@ -230,7 +230,7 @@ contract HouseholdInsurance {
 	function approve(address insuree) __main {
 		// perform validations
 		// only insurer can make an approve
-		assert(msg.sender == insurer);
+		//assert(msg.sender == insurer);
 
 		// find insuree policy
 		Policy storage policy = policies[insuree];
@@ -266,7 +266,7 @@ contract HouseholdInsurance {
 	function decline(address insuree, uint reason) __main {
 		// perform validations
 		// only insurer can make a reject
-		assert(msg.sender == insurer);
+		//assert(msg.sender == insurer);
 		// reason must be set
 		require(reason > 0);
 		// policy must exist
