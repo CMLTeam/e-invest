@@ -196,7 +196,7 @@ angular.module('root', ['rzModule'])
     })
     .controller('BrokerCtrl', function BrokerCtrl($scope, $timeout) {
         web3Promise.then(function () {
-            $scope.insureeId = '0x2b5ad5c4795c026514f8317c7a215e218dccd6cf'; // web3.eth.defaultAccount;
+            $scope.insureeId = web3.eth.defaultAccount;
             $scope.$apply();
         });
 

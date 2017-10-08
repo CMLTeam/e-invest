@@ -1,5 +1,5 @@
 //var address = '0x662a8439045d73cfc5a7e15ce651e6b63ec24c9f';
-var address = '0xcd8d6962a1bfe5cd5ec47196dfaca4bf12dc06b8'; // window.location.search;
+var address = '0x67b379e2172c93def267f7c749fdc7bb835f6acc'; // window.location.search;
 var inputAddress = '0x03cdA1F3DEeaE2de4C73cfC4B93d3A50D0419C24';
 var ethToEuro = 261.592;
 
