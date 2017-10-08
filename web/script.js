@@ -3,6 +3,7 @@ angular.module('root', ['rzModule'])
 
         $scope.calc = calcInsurance;
 
+        $scope.fullName = "John Smith";
         $scope.postalCode = "01067";
         $scope.apptArea = 50.0;
 
