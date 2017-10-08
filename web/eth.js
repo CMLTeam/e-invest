@@ -1,5 +1,5 @@
 //var address = '0x662a8439045d73cfc5a7e15ce651e6b63ec24c9f';
-var address = '0x36b1c7c1455a71bef26a193c8d0846a80f917175'; // window.location.search;
+var address = '0x63d3d65321e7a561745b809f61bf923f828e5b19'; // window.location.search;
 var inputAddress = '0x03cdA1F3DEeaE2de4C73cfC4B93d3A50D0419C24';
 var ethToEuro = 261.592;
 
@@ -388,22 +388,42 @@ function getInsuranceDataFromBlockchain(callback) {
                                 if(!e) {
                                     var totalCoverage = r.toString(10);
                                     console.log("totalCoverage:" + totalCoverage);
-                                    if (insureeCount > 0) {
-                                        var avgHouseArea = totalArea / insureeCount;
-                                        var avgPremium = totalPremium / insureeCount;
-                                        var avgCoverage = totalCoverage / insureeCount;
-                                        callback({
-                                            insureeCount: insureeCount,
-                                            avgHouseArea: avgHouseArea,
-                                            avgPremium: weiToEur(avgPremium),
-                                            avgCoverage: weiToEur(avgCoverage),
-                                            totalPremium: weiToEur(totalPremium),
-                                            totalCoverage: weiToEur(totalCoverage)
-                                        });
-                                    }
-                                    else {
-                                        console.warn("insureeCount = 0!");
-                                    }
+                                    smartContract.totalInvested(function(e, r) {
+                                        if(!e) {
+                                            var totalInvested = r.toString(10);
+                                            console.log("totalInvested:" + totalInvested);
+                                            smartContract.totalInvestors(function(e, r) {
+                                                if(!e) {
+                                                    var totalInvestors = r.toString(10);
+                                                    console.log("totalInvestors:" + totalInvestors);
+                                                    if(insureeCount > 0) {
+                                                        var avgHouseArea = totalArea / insureeCount;
+                                                        var avgPremium = totalPremium / insureeCount;
+                                                        var avgCoverage = totalCoverage / insureeCount;
+                                                        callback({
+                                                            insureeCount: insureeCount,
+                                                            avgHouseArea: avgHouseArea,
+                                                            avgPremium: weiToEur(avgPremium),
+                                                            avgCoverage: weiToEur(avgCoverage),
+                                                            totalPremium: weiToEur(totalPremium),
+                                                            totalCoverage: weiToEur(totalCoverage),
+                                                            totalInvestment: weiToEur(totalInvested),
+                                                            totalInvestors: totalInvestors
+                                                        });
+                                                    }
+                                                    else {
+                                                        console.warn("insureeCount = 0!");
+                                                    }
+                                                }
+                                                else {
+                                                    console.error(e);
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            console.error(e);
+                                        }
+                                    });
                                 }
                                 else {
                                     console.error(e);

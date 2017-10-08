@@ -161,7 +161,11 @@ angular.module('root', ['rzModule'])
             });
         };
 
-
+        $scope.$watch("inv.invAmount", function(newValue, oldValue) {
+            $scope.inv.maxProfit = Math.min($scope.inv.pf.totalPremium, ($scope.inv.pf.totalPremium / $scope.inv.pf.totalCoverage) * ($scope.inv.pf.totalInvestment + newValue));
+            $scope.inv.maxLoss = Math.min(newValue, $scope.inv.pf.totalCoverage);
+            $scope.inv.expProfit = (100 * $scope.inv.maxProfit - $scope.inv.maxLoss ) / 101;
+        });
 
         web3Promise.then(function () {
             getInsuranceDataFromBlockchain(function(insuranceData) {
@@ -171,7 +175,9 @@ angular.module('root', ['rzModule'])
                     avgPremium: 400,
                     avgCoverage: 20000,
                     totalPremium: 2300000,
-                    totalCoverage: 53700000
+                    totalCoverage: 53700000,
+                    totalInvestment: 0,
+                    totalInvestors: 0
                 };
                 $scope.portfolios = [
                     angular.extend({title: "Portfolio A", descr: "Low Risk - Low Profit"}, insuranceData),
