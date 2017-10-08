@@ -259,4 +259,15 @@ angular.module('root', ['rzModule'])
     })
     .controller('AboutCtrl', function AboutCtrl($scope) {
 
-    });
+    })
+    .controller('AdminCtrl', function AboutCtrl($scope) {
+        $scope.getCurrentSmartContractAddr = function () {
+            return getSmartContractAddr();
+        };
+
+        $scope.setSmartContractAddr = function (smartContractAddr) {
+            console.info(111,smartContractAddr)
+            localStorage.smartContractAddr = smartContractAddr;
+        };
+    })
+;
