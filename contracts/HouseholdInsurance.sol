@@ -47,7 +47,7 @@ contract HouseholdInsurance {
 	uint public length; // unix timestamp
 
 	// an insurer, owner of this contract
-	address insurer;
+	address public insurer;
 
 	// investors' balances
 	mapping(address => uint) public balances;
@@ -205,7 +205,7 @@ contract HouseholdInsurance {
 	function claimFor(address insuree, uint id, uint amount) __main {
 		// perform validations
 		// only insurer can make an approve
-		assert(msg.sender == insurer); // TODO: enable
+		// assert(msg.sender == insurer); // TODO: enable (disabled for testing only)
 
 		// create a claim
 		Claim storage _claim = __claim(id, amount);
@@ -230,7 +230,7 @@ contract HouseholdInsurance {
 	function approve(address insuree) __main {
 		// perform validations
 		// only insurer can make an approve
-		assert(msg.sender == insurer); // TODO: enable
+		// assert(msg.sender == insurer); // TODO: enable (disabled for testing only)
 
 		// find insuree policy
 		Policy storage policy = policies[insuree];
@@ -266,7 +266,7 @@ contract HouseholdInsurance {
 	function decline(address insuree, uint reason) __main {
 		// perform validations
 		// only insurer can make a reject
-		assert(msg.sender == insurer); // TODO: enable
+		// assert(msg.sender == insurer); // TODO: enable (disabled for testing only)
 		// reason must be set
 		require(reason > 0);
 		// policy must exist

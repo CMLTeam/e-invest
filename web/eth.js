@@ -1,5 +1,5 @@
 //var address = '0x662a8439045d73cfc5a7e15ce651e6b63ec24c9f';
-var address = '0xa28afda14be5789564ae5fa03665c4180e3c680b'; // window.location.search;
+var address = '0xcd8d6962a1bfe5cd5ec47196dfaca4bf12dc06b8'; // window.location.search;
 var inputAddress = '0x03cdA1F3DEeaE2de4C73cfC4B93d3A50D0419C24';
 var ethToEuro = 261.592;
 
@@ -91,27 +91,6 @@ var abi = [
         "type": "function"
     },
     {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "insuree",
-                "type": "address"
-            },
-            {
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "claimOnBehalf",
-        "outputs": [],
-        "payable": false,
-        "type": "function"
-    },
-    {
         "constant": true,
         "inputs": [],
         "name": "totalInsurees",
@@ -179,12 +158,46 @@ var abi = [
                 "type": "address"
             },
             {
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "claimFor",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "insuree",
+                "type": "address"
+            },
+            {
                 "name": "reason",
                 "type": "uint256"
             }
         ],
         "name": "decline",
         "outputs": [],
+        "payable": false,
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "stateCode",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
         "payable": false,
         "type": "function"
     },

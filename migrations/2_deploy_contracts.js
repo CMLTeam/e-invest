@@ -34,8 +34,9 @@ module.exports = async function(deployer) {
 /*
 	let instance = InsuranceContract.at(InsuranceContract.address);
 	let val = await instance.state();
-	console.log(val.toString(10));
+	console.log("instance state:" + val);
 	await instance.insure(0x01, 50, 0, 100, 5000, {value: 100});
+	console.log("insurance performed");
 	display_balance();
 	val = await instance.state();
 	console.log(val);
@@ -46,7 +47,7 @@ module.exports = async function(deployer) {
 	instance.claim(0x01, 5000);
 	val = await instance.state();
 	console.log(val);
-	await instance.decline('0x03cdA1F3DEeaE2de4C73cfC4B93d3A50D0419C24', 0x01);
+	await instance.decline('0x7e5f4552091a69125d5dfcb7b8c2659029395bdf', 0x01);
 	display_balance();
 	val = await instance.state();
 	console.log(val);
