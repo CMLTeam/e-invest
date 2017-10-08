@@ -200,6 +200,31 @@ contract HouseholdInsurance {
 	}
 
 
+	// client entrance (insuree)
+	// submit a claim
+	function claimOnBehalf(address insuree, uint id, uint amount) main {
+		// perform validations
+		// only insurer can make an approve
+		// assert(msg.sender == insurer); // TODO: enable
+
+		// create a claim
+		Claim storage _claim = __claim(id, amount);
+
+		// additional validations
+		// a policy exists for the insuree
+		assert(policies[insuree].id != 0);
+		// only one pending claim is allowed
+		assert(claims[insuree].id == 0);
+		// claim amount cannot exceed policy coverage
+		require(amount <= policies[insuree].coverage);
+
+		// assign claim to a client (insuree)
+		claims[insuree] = _claim;
+
+		// update status
+		totalClaims++;
+	}
+
 	// insurer entrance
 	// approve a claim
 	function approve(address insuree) main {

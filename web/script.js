@@ -195,22 +195,60 @@ angular.module('root', ['rzModule'])
         });
     })
     .controller('BrokerCtrl', function BrokerCtrl($scope, $timeout) {
+        web3Promise.then(function () {
+            $scope.insureeId = web3.eth.defaultAccount;
+            $scope.$apply();
+        });
+
         $scope.claim = function (id) {
-            $scope.insureeId = null;
-            if (id)
-                $scope.claims.push({id: id});
+            var contract = getContract();
+            contract.claimOnBehalf(id, 1, 1, function(e, r) {
+                if(!e) {
+                    console.log(r);
+                    $scope.insureeId = null;
+                    if (id) {
+                        $scope.claims.push({id: id});
+                    }
+                    $scope.ins_clicked=true;
+                    $scope.$apply();
+                }
+                else {
+                    console.error(e);
+                }
+            });
         };
-        $scope.approve = function (result, idx) {
+        $scope.approve = function(result, idx) {
+            var address = $scope.claims[idx].id;
+            var contract = getContract();
+            if(result) {
+                contract.approve(address, function(e, r) {
+                    if(!e) {
+                        console.log(r);
+                        $scope.claims.splice(idx, 1);
+                    }
+                    else {
+                        console.error(e);
+                        $scope.claims[idx].result = "Error";
+                    }
+                    $scope.$apply();
+                });
+            }
+            else {
+                contract.decline(address, 1, function(e, r) {
+                    if(!e) {
+                        console.log(r);
+                        $scope.claims.splice(idx, 1);
+                    }
+                    else {
+                        console.error(e);
+                        $scope.claims[idx].result = "Error";
+                    }
+                    $scope.$apply();
+                });
+            }
             $scope.claims[idx].result = result ? 'Approving' : 'Rejecting';
-            $timeout(function () {
-                $scope.claims.splice(idx, 1);
-            }, 2000);
         };
-        $scope.claims = [
-            {id:'111'},
-            {id:'222'},
-            {id:'333'}
-        ]
+        $scope.claims = []
     })
     .controller('AboutCtrl', function AboutCtrl($scope) {
 
